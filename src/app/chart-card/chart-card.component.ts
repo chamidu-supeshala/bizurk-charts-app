@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Chart, ChartComponentLike, ChartConfiguration, ChartOptions } from 'chart.js';
-import { EmptyObject } from 'chart.js/types/basic';
 import { easingEffects } from 'chart.js/helpers';
+import { BaseChartDirective } from 'ng2-charts';
+import { AppService } from '../app.service';
+import { Subscription } from 'rxjs';
 
 let totalDuration: any;
 let dataLength: any;
@@ -11,7 +13,11 @@ let dataLength: any;
   templateUrl: './chart-card.component.html',
   styleUrls: ['./chart-card.component.scss']
 })
-export class ChartCardComponent implements OnInit {
+export class ChartCardComponent implements OnInit, OnDestroy {
+
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+  
+  private subscription: Subscription | undefined;
 
   public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [
@@ -108,11 +114,25 @@ export class ChartCardComponent implements OnInit {
     }
   }];
 
-  constructor() { }
+  constructor (
+    public appService: AppService
+  ) {}
 
   ngOnInit(): void {
     dataLength = 9;
     totalDuration = 500;
+
+    this.subscription = this.appService.onDarkModeUpdated.subscribe(() => {
+      if (this.chart) {
+        this.chart.render();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }
