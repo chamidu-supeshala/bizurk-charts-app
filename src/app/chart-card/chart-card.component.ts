@@ -1,12 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Chart, ChartComponentLike, ChartConfiguration, ChartOptions } from 'chart.js';
-import { easingEffects } from 'chart.js/helpers';
 import { BaseChartDirective } from 'ng2-charts';
 import { AppService } from '../app.service';
 import { Subscription } from 'rxjs';
-
-let totalDuration: any;
-let dataLength: any;
 
 @Component({
   selector: 'app-chart-card',
@@ -33,13 +29,13 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     ],
     datasets: [
       {
-        label: 'Value',
+        label: ' Value',
         data: [10, 15, 5, 35, 27, 46, 30, 57, 52],
         tension: 0.5,
         borderWidth: 5,
         hoverBorderWidth: 6,
         pointRadius: 0,
-      }
+      },
     ]
   };
 
@@ -72,28 +68,28 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     animations: {
       x: {
         type: 'number',
-        easing: 'linear',
-        duration: (ctx: any) => easingEffects.easeOutQuad(ctx.index / dataLength) * totalDuration / dataLength,
+        easing: 'easeOutQuart',
+        duration: 100,
         from: NaN,
         delay(ctx: any) {
           if (ctx.type !== 'data' || ctx.xStarted) {
             return 0;
           }
           ctx.xStarted = true;
-          return easingEffects.easeOutQuad(ctx.index / dataLength) * totalDuration;
+          return ctx.index * 30;
         }
       },
       y: {
         type: 'number',
-        easing: 'linear',
-        duration: (ctx: any) => easingEffects.easeOutQuad(ctx.index / dataLength) * totalDuration / dataLength,
+        easing: 'easeOutQuart',
+        duration: 100,
         from: (ctx: any) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y,
         delay(ctx: any) {
           if (ctx.type !== 'data' || ctx.yStarted) {
             return 0;
           }
           ctx.yStarted = true;
-          return easingEffects.easeOutQuad(ctx.index / dataLength) * totalDuration;;
+          return ctx.index * 30;
         }
       }
     },
@@ -119,14 +115,18 @@ export class ChartCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    dataLength = 9;
-    totalDuration = 500;
-
     this.subscription = this.appService.onDarkModeUpdated.subscribe(() => {
       if (this.chart) {
         this.chart.render();
       }
     });
+
+    const that = this;
+    window.onfocus = function () { 
+      if (that.chart) {
+        that.chart.render();
+      }
+    }; 
   }
 
   ngOnDestroy(): void {
