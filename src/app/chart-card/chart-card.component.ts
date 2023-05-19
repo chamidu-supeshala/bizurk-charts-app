@@ -14,6 +14,15 @@ export class ChartCardComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
   
   private subscription: Subscription | undefined;
+  private dataSets = [
+    [10, 15, 5, 35, 27, 46, 30, 57, 52],
+    [15, 11, 20, 22, 35, 30, 20, 32, 40],
+    [52, 57, 30, 46, 27, 35, 5, 15, 10],
+    [15, 11, 20, 22, 32, 16, 22, 30, 12],
+    [12, 30, 22, 16, 32, 22, 20, 11, 15],
+    [40, 32, 20, 30, 35, 22, 20, 11, 15],
+    [52, 57, 30, 46, 27, 35, 5, 15, 10]
+  ]
 
   public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [
@@ -29,7 +38,7 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     ],
     datasets: [
       {
-        label: ' Value',
+        label: '',
         data: [10, 15, 5, 35, 27, 46, 30, 57, 52],
         tension: 0.5,
         borderWidth: 5,
@@ -48,21 +57,84 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     },
     plugins: {
       tooltip: {
-        titleMarginBottom: 10,
-        padding: 10,
-        callbacks: {
-          label: function(context) {
-              let label = context.dataset.label || '';
+        // titleMarginBottom: 10,
+        // padding: 10,
+        // callbacks: {
+        //   label: function(context) {
+        //       let label = context.dataset.label || '';
 
-              if (label) {
-                  label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-              }
-              return label;
-          }
-      }
+        //       if (label) {
+        //           label += ': ';
+        //       }
+        //       if (context.parsed.y !== null) {
+        //           label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+        //       }
+        //       return label;
+        //   }
+        // }
+        enabled: false,
+
+                external: function(context) {
+                    // Tooltip Element
+                    let tooltipEl = document.getElementById('chartjs-tooltip');
+
+                    // Create element on first render
+                    if (!tooltipEl) {
+                        tooltipEl = document.createElement('div');
+                        tooltipEl.id = 'chartjs-tooltip';
+                        tooltipEl.innerHTML = '<table></table>';
+                        document.body.appendChild(tooltipEl);
+                    }
+
+                    // Hide if no tooltip
+                    const tooltipModel = context.tooltip;
+                    if (tooltipModel.opacity === 0) {
+                        tooltipEl.style.opacity = '0';
+                        return;
+                    }
+
+                    // Set caret Position
+                    tooltipEl.classList.remove('above', 'below', 'no-transform');
+                    if (tooltipModel.yAlign) {
+                        tooltipEl.classList.add(tooltipModel.yAlign);
+                    } else {
+                        tooltipEl.classList.add('no-transform');
+                    }
+
+                    function getBody(bodyItem: any) {
+                        return bodyItem.lines;
+                    }
+
+                    // Set Text
+                    if (tooltipModel.body) {
+                        const titleLines = tooltipModel.title || [];
+                        const bodyLines = tooltipModel.body.map(getBody);
+
+                        let innerHtml = '<div class="tooltip">';
+
+                        bodyLines.forEach(function(text) {
+                            innerHtml += '<p>' + text + '</p>';
+                        });
+                        innerHtml += '</div>';
+                        
+
+                        let tableRoot = tooltipEl.querySelector('table');
+                        if (tableRoot)
+                          tableRoot.innerHTML = innerHtml;
+                    }
+
+                    const position = context.chart.canvas.getBoundingClientRect();
+                    //const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
+
+                    // Display, position, and set styles for font
+                    tooltipEl.style.opacity = '1';
+                    tooltipEl.style.position = 'absolute';
+                    tooltipEl.style.left = position.left + 20 + window.pageXOffset + tooltipModel.caretX +  'px';
+                    tooltipEl.style.top = position.top - 20 + window.pageYOffset + tooltipModel.caretY + 'px';
+                    //tooltipEl.style.font = bodyFont.string;
+                    //tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
+                    tooltipEl.style.pointerEvents = 'none';
+                }
       }
     },
     scales: {
@@ -72,7 +144,12 @@ export class ChartCardComponent implements OnInit, OnDestroy {
           drawBorder: false,
         },
         ticks: {
-          color: 'gray'
+          display: false,
+          color: '#ddd',
+          font: {
+            size: 16,
+            family: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+          }
         }
       },
       y: {
@@ -148,14 +225,15 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateChart(index: number): void {
+    this.lineChartData.datasets[0].data = this.dataSets[index];
+    this.chart?.render();
+  }
+
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  }
-
-  chartClicked(event: any) {
-    console.log(event);
   }
 
 }

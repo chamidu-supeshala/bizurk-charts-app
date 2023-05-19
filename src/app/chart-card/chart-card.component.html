@@ -4,7 +4,15 @@
     [data]="lineChartData"
     [options]="lineChartOptions"
     [plugins]="lineChartPlugins"
-    [legend]="false"
-    (chartClick)="chartClicked($event)">
+    [legend]="false">
   </canvas>
+  <div class="flex justify-between text-lg text-slate-900 dark:text-slate-300 mx-12 font-medium">
+    <p class="cursor-pointer px-3" (click)="updateChart(0)">1D</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(1)">5D</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(2)">3M</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(3)">6M</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(4)">1Y</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(5)">5Y</p>
+    <p class="cursor-pointer px-3" (click)="updateChart(6)">MAX</p>
+  </div>
 </div>
