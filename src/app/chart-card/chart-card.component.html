@@ -4,6 +4,7 @@
     [data]="lineChartData"
     [options]="lineChartOptions"
     [plugins]="lineChartPlugins"
-    [legend]="false">
+    [legend]="false"
+    (chartClick)="chartClicked($event)">
   </canvas>
 </div>

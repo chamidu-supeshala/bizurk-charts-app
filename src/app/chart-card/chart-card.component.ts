@@ -40,10 +40,30 @@ export class ChartCardComponent implements OnInit, OnDestroy {
   };
 
   public lineChartOptions: ChartOptions<'line'> = {
+    
     responsive: true,
     interaction: {
       mode: 'index',
       intersect: false
+    },
+    plugins: {
+      tooltip: {
+        titleMarginBottom: 10,
+        padding: 10,
+        callbacks: {
+          label: function(context) {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                  label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+          }
+      }
+      }
     },
     scales: {
       x: {
@@ -121,18 +141,21 @@ export class ChartCardComponent implements OnInit, OnDestroy {
       }
     });
 
-    const that = this;
-    window.onfocus = function () { 
-      if (that.chart) {
-        that.chart.render();
+    this.appService.onWindowFocus.subscribe(() => {
+      if (this.chart) {
+        this.chart.render();
       }
-    }; 
+    });
   }
 
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  chartClicked(event: any) {
+    console.log(event);
   }
 
 }

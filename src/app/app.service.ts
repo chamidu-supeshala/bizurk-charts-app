@@ -7,6 +7,7 @@ import { Subject } from "rxjs";
 export class AppService {
   _darkMode: boolean = true;
   onDarkModeUpdated = new  Subject<boolean>();
+  onWindowFocus = new Subject<boolean>();
 
   get darkMode() {
     return this._darkMode;
