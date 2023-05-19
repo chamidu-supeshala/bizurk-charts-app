@@ -57,84 +57,51 @@ export class ChartCardComponent implements OnInit, OnDestroy {
     },
     plugins: {
       tooltip: {
-        // titleMarginBottom: 10,
-        // padding: 10,
-        // callbacks: {
-        //   label: function(context) {
-        //       let label = context.dataset.label || '';
-
-        //       if (label) {
-        //           label += ': ';
-        //       }
-        //       if (context.parsed.y !== null) {
-        //           label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-        //       }
-        //       return label;
-        //   }
-        // }
         enabled: false,
 
-                external: function(context) {
-                    // Tooltip Element
-                    let tooltipEl = document.getElementById('chartjs-tooltip');
+        external: function(context) {
+            let tooltipEl = document.getElementById('chartjs-tooltip');
+            if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.id = 'chartjs-tooltip';
+                tooltipEl.innerHTML = '<table></table>';
+                document.body.appendChild(tooltipEl);
+            }
+            const tooltipModel = context.tooltip;
+            if (tooltipModel.opacity === 0) {
+                tooltipEl.style.opacity = '0';
+                return;
+            }
+            tooltipEl.classList.remove('above', 'below', 'no-transform');
+            if (tooltipModel.yAlign) {
+                tooltipEl.classList.add(tooltipModel.yAlign);
+            } else {
+                tooltipEl.classList.add('no-transform');
+            }
 
-                    // Create element on first render
-                    if (!tooltipEl) {
-                        tooltipEl = document.createElement('div');
-                        tooltipEl.id = 'chartjs-tooltip';
-                        tooltipEl.innerHTML = '<table></table>';
-                        document.body.appendChild(tooltipEl);
-                    }
+            function getBody(bodyItem: any) {
+                return bodyItem.lines;
+            }
+            if (tooltipModel.body) {
+                const titleLines = tooltipModel.title || [];
+                const bodyLines = tooltipModel.body.map(getBody);
 
-                    // Hide if no tooltip
-                    const tooltipModel = context.tooltip;
-                    if (tooltipModel.opacity === 0) {
-                        tooltipEl.style.opacity = '0';
-                        return;
-                    }
-
-                    // Set caret Position
-                    tooltipEl.classList.remove('above', 'below', 'no-transform');
-                    if (tooltipModel.yAlign) {
-                        tooltipEl.classList.add(tooltipModel.yAlign);
-                    } else {
-                        tooltipEl.classList.add('no-transform');
-                    }
-
-                    function getBody(bodyItem: any) {
-                        return bodyItem.lines;
-                    }
-
-                    // Set Text
-                    if (tooltipModel.body) {
-                        const titleLines = tooltipModel.title || [];
-                        const bodyLines = tooltipModel.body.map(getBody);
-
-                        let innerHtml = '<div class="tooltip">';
-
-                        bodyLines.forEach(function(text) {
-                            innerHtml += '<p>' + text + '</p>';
-                        });
-                        innerHtml += '</div>';
-                        
-
-                        let tableRoot = tooltipEl.querySelector('table');
-                        if (tableRoot)
-                          tableRoot.innerHTML = innerHtml;
-                    }
-
-                    const position = context.chart.canvas.getBoundingClientRect();
-                    //const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
-
-                    // Display, position, and set styles for font
-                    tooltipEl.style.opacity = '1';
-                    tooltipEl.style.position = 'absolute';
-                    tooltipEl.style.left = position.left + 20 + window.pageXOffset + tooltipModel.caretX +  'px';
-                    tooltipEl.style.top = position.top - 20 + window.pageYOffset + tooltipModel.caretY + 'px';
-                    //tooltipEl.style.font = bodyFont.string;
-                    //tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
-                    tooltipEl.style.pointerEvents = 'none';
-                }
+                let innerHtml = '<div class="tooltip">';
+                bodyLines.forEach(function(text) {
+                    innerHtml += '<p>' + text + '</p>';
+                });
+                innerHtml += '</div>';
+                let tableRoot = tooltipEl.querySelector('table');
+                if (tableRoot)
+                  tableRoot.innerHTML = innerHtml;
+            }
+            const position = context.chart.canvas.getBoundingClientRect();
+            tooltipEl.style.opacity = '1';
+            tooltipEl.style.position = 'absolute';
+            tooltipEl.style.left = position.left + 20 + window.pageXOffset + tooltipModel.caretX +  'px';
+            tooltipEl.style.top = position.top - 20 + window.pageYOffset + tooltipModel.caretY + 'px';
+            tooltipEl.style.pointerEvents = 'none';
+        }
       }
     },
     scales: {
