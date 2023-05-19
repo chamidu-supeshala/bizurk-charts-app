@@ -72,7 +72,6 @@ export class ChartCardComponent implements OnInit, OnDestroy {
                 tooltipEl.style.opacity = '0';
                 return;
             }
-            console.log(tooltipModel.yAlign)
             tooltipEl.classList.remove('above', 'below', 'no-transform');
             tooltipEl.classList.add(tooltipModel.yAlign);
             tooltipEl.classList.add(tooltipModel.xAlign);
