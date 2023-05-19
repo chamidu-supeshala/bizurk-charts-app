@@ -5,15 +5,15 @@
     border-radius: 8px;
     border: 1px solid #eee;
     font-weight: 500;
+    transition: all 200ms linear;
 
     &:before {
         content: "";
         position: absolute;
-        top: 20px;
-        margin-top: -10px;
-        left:-20px;
+        top: -30px;
+        margin-top: 10px;
         border: solid 10px transparent;
-        border-right-color: #FFF;
+        border-bottom-color: #FFF;
         z-index: 1;
     }
 }

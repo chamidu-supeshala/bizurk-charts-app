@@ -72,12 +72,10 @@ export class ChartCardComponent implements OnInit, OnDestroy {
                 tooltipEl.style.opacity = '0';
                 return;
             }
+            console.log(tooltipModel.yAlign)
             tooltipEl.classList.remove('above', 'below', 'no-transform');
-            if (tooltipModel.yAlign) {
-                tooltipEl.classList.add(tooltipModel.yAlign);
-            } else {
-                tooltipEl.classList.add('no-transform');
-            }
+            tooltipEl.classList.add(tooltipModel.yAlign);
+            tooltipEl.classList.add(tooltipModel.xAlign);
 
             function getBody(bodyItem: any) {
                 return bodyItem.lines;
@@ -95,12 +93,15 @@ export class ChartCardComponent implements OnInit, OnDestroy {
                 if (tableRoot)
                   tableRoot.innerHTML = innerHtml;
             }
+
             const position = context.chart.canvas.getBoundingClientRect();
+
             tooltipEl.style.opacity = '1';
             tooltipEl.style.position = 'absolute';
-            tooltipEl.style.left = position.left + 20 + window.pageXOffset + tooltipModel.caretX +  'px';
-            tooltipEl.style.top = position.top - 20 + window.pageYOffset + tooltipModel.caretY + 'px';
+            tooltipEl.style.left = position.left -30 + window.pageXOffset + tooltipModel.caretX +  'px';
+            tooltipEl.style.top = position.top + 10+  window.pageYOffset + tooltipModel.caretY + 'px';
             tooltipEl.style.pointerEvents = 'none';
+            tooltipEl.style.transition = 'all .3s ease';
         }
       }
     },

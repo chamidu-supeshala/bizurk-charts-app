@@ -1,13 +1,3 @@
-.price-text {
-  background: linear-gradient(to right, crimson,pink,springgreen);
-  background-size: 200% 200%;
-  animation: rainbow 2s ease-in-out infinite;
-  background-clip: text;
-  -webkit-background-clip:text;
-  cursor: default;
-  //hover:text-white/[0] dark:hover:text-black/[0]
-}
-
 .logo {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
